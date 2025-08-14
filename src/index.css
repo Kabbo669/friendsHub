@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* .error-tooltip {
+  position: relative;
+  background: #d9534f; */
+  /* color: white;
+  padding: 15px 12px;
+  border-radius: 5px; */
+  /* font-size: 14px; */
+  /* display: inline-block;
+} */
+
+/* The arrow */
+
+/* .error-tooltip::after {
+  content: "";
+  position: absolute; */
+  /* top: 60px;
+  left: 50%; */
+  /* transform: translateX(-50%); */
+  /* margin-top: -9px;  */
+  /* border-width: 15px; */
+  /* border-style: solid;
+  border-color: red transparent transparent transparent ;
+} */
