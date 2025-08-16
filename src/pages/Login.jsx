@@ -4,14 +4,72 @@ import Image from "../components/Image";
 import LoginImage from "../assets/login.jpg";
 import Button from "../components/Button";
 import TextField from "@mui/material/TextField";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { IoEye, IoEyeOff } from "react-icons/io5";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { toast, ToastContainer } from "react-toastify";
 
 const Login = () => {
+  const auth = getAuth();
 
   let [showPassword, setShowPassword] = useState(false)
+  let [email, setEmail] = useState("");
+  let [password, setPassword] = useState("");
 
+  let [emailError, setEmailError] = useState("");
+  let [passwordError, setPasswordError] = useState("");
+  let [loader, setLoader] = useState(false)
+
+  let navigate = useNavigate()
+
+
+  
+
+  let handleLogin=(e)=>{
+    e.preventDefault()
+    signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+  // console.log(userCredential);
+
+    setEmail("")
+    setPassword("")
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorMessage);
+    
+    // Error code from console.log(userCredential)
+    if(errorCode === "auth/user-not-found"){
+      toast.error("No account with this email", {
+        className: "bg-[#8e44ad] text-lg text-white font-semibold font-nunito",
+        progressClassName: "bg-white"
+      })
+    }else if(errorCode === "auth/invalid-email"){
+      toast.error("Please Enter a valid Email", {
+       className: "bg-[#8e44ad] text-lg text-white font-semibold font-nunito",
+        progressClassName: "bg-white" 
+      })
+    }else if(errorCode === "auth/invalid-credential"){
+     toast.error("Please Enter a valid Email", {
+       className: "bg-[#8e44ad] text-lg text-white font-semibold font-nunito",
+        progressClassName: "bg-white" 
+      }) 
+    }else if(errorCode === "auth/too-many-requests"){
+      toast.error("Too many attempts, please try again later", {
+        className: "bg-[#e74c3c] text-lg text-white font-semibold font-nunito",
+        progressClassName: "bg-white"
+      })
+    }else{
+      toast.error("An unexpected error occured",{
+        className: "bg-[#e74c3c] text-lg text-white font-semibold font-nunito",
+        progressClassName: "bg-white"
+      })
+    }
+   });
+   
+}
 
   return (
     <section className="min-h-screen block">
@@ -40,9 +98,11 @@ const Login = () => {
                   <TextField
                     id="standard-basic"
                     label="Email Address"
+                    value={email}
                     variant="standard"
                     placeholder="youraddress@gmail.com"
                     sx={{ width: "70%" }}
+                    onChange={()=>setEmail(event.target.value)}
                   />
                 </div>
 
@@ -51,9 +111,11 @@ const Login = () => {
                     id="standard-basic"
                     type= {showPassword ? "text" : "password"}
                     label="Password"
+                    value={password}
                     variant="standard"
                     placeholder="Enter your password"
                     sx={{ width: "70%" }}
+                    onChange={()=>setPassword(event.target.value)}
                   />
                   <div onClick={()=>setShowPassword(!showPassword)}
                   className=" absolute top-1/2 right-[160px] ">
@@ -72,6 +134,7 @@ const Login = () => {
                 <Button
                   text="Login to Continue"
                   className="w-[350px] py-[20px] box-border bg-[#5F35F5] font-bold text-[20px] font-nunito rounded-lg hover:border-blue-900"
+                  onClick= {handleLogin}
                 />
               </div>
 
@@ -103,6 +166,18 @@ const Login = () => {
           Or
           </div> */}
             {/* Or border design using before and after end */}
+
+             <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+              />
           </form>
         </div>
       </Flex>
