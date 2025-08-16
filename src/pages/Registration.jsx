@@ -7,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import { Link, useNavigate } from "react-router-dom";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { FaExclamationCircle } from "react-icons/fa";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { toast, ToastContainer } from "react-toastify";
 import { DNA } from "react-loader-spinner";
 
@@ -85,25 +85,27 @@ const Registration = () => {
     if (valid) {
       setLoader(true)
       createUserWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          // console.log(userCredential);
-
+        .then((user) => {
+          // console.log(user.user);
+          sendEmailVerification(auth.currentUser)
+          .then(() => {
           setEmail("");
           setName("");
           setPassword("");
           toast.success("New user created, Please verify your email", {
             className:
               "bg-blue-500 text-xl text-white rounded-lg font-bold font-nunito",
-               progressClassName: "bg-white"})
+              progressClassName: "bg-white"})
           setLoader(false)
           setTimeout(()=>{
            navigate('/login')
           },2000)
+
+          });  
         })
         .catch((error) => {
             const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorMessage);
+            console.log(errorCode);
             
             // Error code from console.log(userCredential)
              if(errorCode === "auth/invalid-email"){
@@ -111,6 +113,7 @@ const Registration = () => {
                className: "bg-[#8e44ad] text-lg text-white font-semibold font-nunito",
                 progressClassName: "bg-white" 
               })
+              
             }else if(errorCode === "auth/email-already-in-use"){
              toast.error("Thsi email is already registered", {
                className: "bg-[#8e44ad] text-lg text-white font-semibold font-nunito",
@@ -122,11 +125,13 @@ const Registration = () => {
                 className: "bg-[#e74c3c] text-lg text-white font-semibold font-nunito",
                 progressClassName: "bg-white"
               })
+              setLoader(false)
             }else{
               toast.error("An unexpected error occured",{
                 className: "bg-[#e74c3c] text-lg text-white font-semibold font-nunito",
                 progressClassName: "bg-white"
               })
+              setLoader(false)
             }
            });
     }
@@ -233,7 +238,7 @@ const Registration = () => {
                 loader
                 ?
                 <div className="mt-5 mb-5 pl-[110px]">
-                  <DNA
+                <DNA
                 visible={true}
                 height="100"
                 width="100"
