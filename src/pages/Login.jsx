@@ -7,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { IoEye, IoEyeOff } from "react-icons/io5";
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
 import { toast, ToastContainer } from "react-toastify";
 import { FaExclamationCircle } from "react-icons/fa";
 import { DNA } from "react-loader-spinner";
@@ -24,6 +24,10 @@ const Login = () => {
   let [emailError, setEmailError] = useState("");
   let [passwordError, setPasswordError] = useState("");
   let [loader, setLoader] = useState(false)
+  let [forgetUi, setForgetUi] = useState(false)
+  let [forgetEmail, setForgetEmail] = useState("")
+  let [forgetEmailError, setForgetEmailError] = useState("")
+
   
 
   let navigate = useNavigate()
@@ -138,13 +142,70 @@ const Login = () => {
   }  
 }
 
+// Forget password
  let handleForget=()=>{
-  console.log("clicked");
+  setForgetUi(true)
+ }
+
+ let handleForgetEmail=(e)=>{
+  setForgetEmail(e.target.value);
+  setForgetEmailError("")
+ }
+ 
+ let handleBack=()=>{
+  setForgetUi(false)
+  setForgetEmail("")
+  setForgetEmailError("")
+ }
+
+ let handleReset=()=>{
+  let valid = true
+  if(!forgetEmail){
+  setForgetEmailError("Plese Enter a Email")
+  valid = false
+ }else if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(forgetEmail)){
+  setForgetEmailError("Please Enter a valid Email")
+  valid = false
+ }if(valid){
+  sendPasswordResetEmail(auth, forgetEmail)
+  .then(() => {
+   toast.success("Please check your email to reset your password", {
+   className: "bg-blue-500 text-xl text-white rounded-lg font-bold font-nunito",
+   progressClassName: "bg-white"})
+   setForgetEmail("")
+   setForgetUi(false)
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    if(errorCode === "auth/invalid-credential"){
+     toast.error("Please check your Email and Password ", {
+       className: "bg-[#8e44ad] text-lg text-white font-semibold font-nunito",
+        progressClassName: "bg-white" 
+      }) 
+    }else if(errorCode === "auth/too-many-requests"){
+      toast.error("Too many attempts, please try again later", {
+        className: "bg-[#e74c3c] text-lg text-white font-semibold font-nunito",
+        progressClassName: "bg-white"
+      })
+    }else if(errorCode === "auth/missing-email"){
+     toast.error("No user with this email", {
+        className: "bg-[#e74c3c] text-lg text-white font-semibold font-nunito",
+        progressClassName: "bg-white"
+      }) 
+    }else{
+      toast.error("An unexpected error occured",{
+        className: "bg-[#e74c3c] text-lg text-white font-semibold font-nunito",
+        progressClassName: "bg-white"
+      })
+    }
+  });
+  }
  }
  
 
   return (
-    <section className="min-h-screen block">
+    <>
+    <section className="min-h-screen block relative">
       <Flex className="h-screen">
         <div className="w-1/2 overflow-hidden">
           <Image src={LoginImage} className=" w-full h-full object-cover" />
@@ -186,7 +247,7 @@ const Login = () => {
                     <div className="absolute bottom-[36px] right-1/2 translate-x-1/2 border-b-[10px] border-b-red-600 border-x-[10px] border-x-transparent"></div>
                     {/*this div is for upper arrow */}
                     </div>
-                    }
+                  }
                 </div>
 
                 <div className="relative">
@@ -221,8 +282,8 @@ const Login = () => {
                       <IoEyeOff />
                     }
                   </div>
+                 </div>
                 </div>
-              </div>
                 <div className="mt-12 mb-6 mr-[150px]">
                 <Button
                   text="Login to Continue"
@@ -278,6 +339,55 @@ const Login = () => {
         </div>
       </Flex>
     </section>
+
+    {
+      forgetUi 
+      &&
+      <section className=" w-full flex justify-center items-center min-h-screen bg-black/70 absolute top-0 left-0 z-10">
+      <div className="flex flex-col items-center justify-center w-[450px] bg-white border rounded-lg">
+  
+        <div className="mt-12 w-full flex justify-center items-center relative">
+        <TextField
+        id="outlined-basic"
+        label="Email Address"
+        value={forgetEmail}
+        variant="outlined"
+        placeholder="youraddress@gmail.com"
+        sx={{ width: "70%" }}
+        onChange={handleForgetEmail}
+        />
+        {
+        forgetEmailError && 
+        <div className="flex flex-auto items-center absolute bg-red-600 px-1 py-[6px] top-2/3 translate-y-1/2 left-[100px] text-base text-white font-semibold font-poppins rounded shadow-lg">
+        {/*upper div is arrow tooltip */}
+        <FaExclamationCircle className="pr-1 text-xl" />
+        {forgetEmailError}
+                  
+        <div className="absolute border-x-[10px] border-x-transparent border-b-[10px] -top-[9px] left-1/2 -translate-x-1/2 border-b-red-600 shadow-lg"></div>
+        {/*this div is for upper arrow */}
+        </div>
+        }
+        </div>
+       
+
+        <div className="flex mb-10 mt-12 gap-x-4">
+          <Button
+          text="Reset"
+          className="w-[150px] h-[50px] box-border bg-[#5F35F5] font-bold text-[14px] font-nunito rounded-lg hover:border-blue-900"
+          onClick= {handleReset}
+          disabled = {!forgetEmail} 
+          // The button will remain disabled untill there is no email in input field
+          />
+          <Button
+          text="Back to Login"
+          className="w-[150px] h-[50px] box-border bg-[#5F35F5] font-bold text-[14px] font-nunito rounded-lg hover:border-blue-900"
+          onClick= {handleBack}
+          />
+        </div>
+      </div>
+    </section>
+    }
+    </>
   );
 };
 
