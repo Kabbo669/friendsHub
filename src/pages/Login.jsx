@@ -11,6 +11,8 @@ import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopu
 import { toast, ToastContainer } from "react-toastify";
 import { FaExclamationCircle } from "react-icons/fa";
 import { DNA } from "react-loader-spinner";
+import { useDispatch } from "react-redux";
+import { userInfo } from "../slices/userInfoSlice";
 
 
 const Login = () => {
@@ -29,8 +31,9 @@ const Login = () => {
   let [forgetEmailError, setForgetEmailError] = useState("")
 
   
-
+  
   let navigate = useNavigate()
+  let dispatch = useDispatch()
 
   let handleEmail=(e)=>{
   setEmail(e.target.value);
@@ -91,6 +94,10 @@ const Login = () => {
        signInWithEmailAndPassword(auth, email, password)
      .then((user) => {
       if(user.user.emailVerified){
+        // console.log(user.user);
+        dispatch(userInfo(user.user))
+        localStorage.setItem("userInfo", JSON.stringify(user.user))
+
        toast.success("Log in successful", {
       className:
         "bg-blue-500 text-lg text-white rounded-lg font-bold font-nunito",
