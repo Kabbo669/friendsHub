@@ -1,21 +1,21 @@
 import React from "react";
-import Sidebar from "./Sidebar";
 import { Outlet } from "react-router-dom";
 import Flex from "../components/Flex";
-import Button from "../components/Button";
+import Sidebar from "../components/Sidebar";
+
 
 const RootLayout = () => {
   return (
-    <section>
-      <Flex>
-        <div className="w-2/12 bg-red-400">
-          <Sidebar />
+    <section className="flex items-start">
+      
+        <div className="w-2/12 h-screen">
+          <Sidebar/>
         </div>
         
-        <div className="w-10/12 bg-blue-500">
+        <div className="w-10/12 h-screen">
           <Outlet />
         </div>
-      </Flex>
+      
     </section>
   );
 };

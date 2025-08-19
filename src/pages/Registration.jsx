@@ -192,7 +192,8 @@ const Registration = () => {
                       sx={{ width: "65%" }}
                       onChange={handleName}
                     />
-                    {nameError && (
+                    {
+                    nameError && 
                       <div className="flex items-center absolute bg-red-600 px-1 py-[6px] top-1/2 -translate-y-1/2 right-[10px] text-white text-base font-semibold font-poppins border rounded">
                         <FaExclamationCircle className="pr-1 text-xl" />
                         {nameError}
@@ -201,7 +202,7 @@ const Registration = () => {
                         <div className="absolute top-1/2 -left-[9px] -translate-y-1/2 border-y-[10px] border-y-transparent border-r-[10px] border-r-red-600"></div>
                         {/*this div is for left arrow */}
                       </div>
-                    )}
+                    }
                   </div>
 
                   <div className="relative">

@@ -99,7 +99,7 @@ const Login = () => {
         localStorage.setItem("userInfo", JSON.stringify(user.user))
 
        toast.success("Log in successful", {
-      className:
+       className:
         "bg-blue-500 text-lg text-white rounded-lg font-bold font-nunito",
        progressClassName: "bg-white"})
        setEmail("")
@@ -360,7 +360,7 @@ const Login = () => {
         value={forgetEmail}
         variant="outlined"
         placeholder="youraddress@gmail.com"
-        sx={{ width: "70%" }}
+        sx={{ width: "75%" }}
         onChange={handleForgetEmail}
         />
         {
@@ -380,14 +380,14 @@ const Login = () => {
         <div className="flex mb-10 mt-12 gap-x-4">
           <Button
           text="Reset"
-          className="w-[150px] h-[50px] box-border bg-[#5F35F5] font-bold text-[14px] font-nunito rounded-lg hover:border-blue-900"
+          className="w-[160px] h-[50px] box-border bg-[#5F35F5] font-bold text-[16px] font-nunito rounded-lg hover:border-blue-900"
           onClick= {handleReset}
           disabled = {!forgetEmail} 
           // The button will remain disabled untill there is no email in input field
           />
           <Button
           text="Back to Login"
-          className="w-[150px] h-[50px] box-border bg-[#5F35F5] font-bold text-[14px] font-nunito rounded-lg hover:border-blue-900"
+          className="w-[160px] h-[50px] box-border bg-[#5F35F5] font-bold text-[16px] font-nunito rounded-lg hover:border-blue-900"
           onClick= {handleBack}
           />
         </div>

@@ -12,13 +12,19 @@ import Message from './pages/Message';
 import Setting from './pages/Setting';
 import Notification from './pages/Notification';
 import Home from './pages/Home';
+import PrivateRoute from './layouts/PrivateRoute';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
     <Route path="/" element={<Registration />}></Route>
     <Route path="/login" element={<Login />}></Route>
-    <Route path="/pages" element={<RootLayout />}>
+    <Route path="/pages" element={
+      <PrivateRoute>
+      <RootLayout/>
+    </PrivateRoute>
+      } 
+      >
       <Route path="home" element={<Home />}></Route>
       <Route path="message" element={<Message />}></Route>
       <Route path="setting" element={<Setting />}></Route>
