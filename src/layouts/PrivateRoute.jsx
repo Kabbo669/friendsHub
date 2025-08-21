@@ -7,7 +7,7 @@ const PrivateRoute = ({children}) => {
   let userInfo = JSON.parse(localStorage.getItem("userInfo"))
 
   if(!userInfo){
-    return <Navigate to= "/login" replace/>
+    return <Navigate to="/login" replace/>
   }
   
 

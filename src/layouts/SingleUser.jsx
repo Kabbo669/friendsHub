@@ -5,7 +5,7 @@ const SingleUser = ({isLast, profileName, profileText, buttonText}) => {
   return (
     <>
       <div className="relative flex items-center mb-[14px] pt-[17px]">
-        <div className="h-[60px] w-[70px] ml-[20px]">
+        <div className="h-[70px] w-[70px] ml-[20px] shrink-0">
           <img src={UserImage} alt="" className="w-full h-full rounded-full" />
         </div>
         <div className="flex items-center justify-between w-full pr-[40px]">
