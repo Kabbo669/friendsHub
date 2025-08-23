@@ -1,9 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import SingleUser from "./SingleUser";
+import { getDatabase, ref, onValue } from "firebase/database";
 
 const UserList = () => {
+  const db = getDatabase();
+  let [userInfo, setUserInfo] = useState([])
+
+  useEffect(()=>{
+  const userInfoRef = ref(db, 'userInfo/');
+  onValue(userInfoRef, (snapshot) => {
+    let array = []
+  // console.log(snapshot.val());
+  snapshot.forEach(item=>{
+    // console.log(item.val());
+    array.push({...item.val()})
+  })
+  setUserInfo(array)
+  
+ });
+  },[])
+  // console.log(userInfo);
+
+
   return (
     <>
       <div className="box-border relative">
@@ -23,14 +43,13 @@ const UserList = () => {
         </div>
 
         <div className="h-[280px] overflow-auto">
-
-         <SingleUser profileName= "Friends Reunion" profileText= "Hi Guys, Wassup!" buttonText="Join"/>
-         <SingleUser profileName= "Friends Forever" profileText="Good to see you" buttonText="Join"/>
-         <SingleUser profileName="Crazy Cousins" profileText="What plans today?" buttonText="Join" />
-         <SingleUser profileName= "Friends Reunion" profileText= "Hi Guys, Wassup!" buttonText="Join"/>
-         <SingleUser profileName= "Friends Forever" profileText="Good to see you" buttonText="Join"/>
-         <SingleUser profileName="Crazy Cousins" profileText="What plans today?" buttonText="Join" isLast={true}/>
-  
+         
+         {
+          userInfo.map(item=>(
+         <SingleUser profileName= {item.username} profileText={item.email} buttonText="Join"/>
+          ))
+         }
+   
         </div>
       </div>
     </>

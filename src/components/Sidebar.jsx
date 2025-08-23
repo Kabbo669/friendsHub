@@ -5,7 +5,7 @@ import { IoHomeOutline, IoSettingsOutline } from "react-icons/io5";
 import { LuLogOut, LuMessageCircleMore } from "react-icons/lu";
 import { RiNotification3Line } from "react-icons/ri";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut, updateProfile } from "firebase/auth";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import SidebarLink from "./SidebarLink";
@@ -15,10 +15,12 @@ import Button from "./Button";
 import { current } from "@reduxjs/toolkit";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { getDownloadURL, getStorage, ref, uploadString } from "firebase/storage";
 
 const Sidebar = () => {
+  const storage = getStorage();
   const auth = getAuth();
-  let ref = useRef(null);
+  let uiRef = useRef(null);
   let [activeValue, setActiveValue] = useState("");
   let [profileUi, setProfileUi] = useState(false);
 
@@ -26,11 +28,14 @@ const Sidebar = () => {
   const [cropData, setCropData] = useState("");
   const cropperRef = createRef();
 
-  let dispatch = useDispatch();
-  let userData = useSelector((state) => state.activeUser.value);
+
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.activeUser.value);
   // console.log(userData);
   let navigate = useNavigate();
   let location = useLocation();
+
+  
 
   let handleLogout = () => {
     signOut(auth)
@@ -66,8 +71,10 @@ const Sidebar = () => {
 
 
   let handleOverlayUi = (e) => {
-    if (!ref.current.contains(e.target)) {
+    if (!uiRef.current.contains(e.target)) {
       setProfileUi(false);
+      setCropData("")
+      setImage(null)
     }
     // console.log(ref.current.contains(e.target));
   };
@@ -93,6 +100,35 @@ const Sidebar = () => {
     if (typeof cropperRef.current?.cropper !== "undefined") {
       setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
 
+      // console.log(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
+
+      const storageRef = ref(storage, auth.currentUser.uid);
+      // console.log(auth.currentUser.uid);
+
+      const message4 = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
+      uploadString(storageRef, message4, 'data_url').then((snapshot) => {
+      console.log('Uploaded a data_url string!');
+     });
+      getDownloadURL(storageRef).then((downloadURL) => {
+      console.log('File available at', downloadURL);
+
+      updateProfile(auth.currentUser, {
+      photoURL: downloadURL
+      
+     }).then(()=>{
+      dispatch(userInfo({...userData,photoURL:downloadURL}))
+      
+      localStorage.setItem("userInfo", JSON.stringify({...userData,photoURL:downloadURL}))
+
+      setProfileUi(false)
+      setCropData("")
+      setImage(null)
+     
+     })
+    })
+
+    // console.log(auth.currentUser.uid);
+
     //  console.log(cropperRef.current?.cropper.getCroppedCanvas().toDataURL()); 
     }
   };
@@ -117,12 +153,13 @@ const Sidebar = () => {
             />
           </div>
         </div>
+        <h3 className="absolute top-[200px] text-white flex items-center justify-center font-bold font-nunito text-xl">{userData.displayName}</h3>
         {profileUi && (
           <div
             onClick={handleOverlayUi}
             className="absolute inset-0 flex justify-center items-center bg-black/70 z-20"
           >
-            <div ref={ref} className="w-[600px] max-h-[90vh]  bg-white rounded-2xl">
+            <div ref={uiRef} className="w-[600px] max-h-[90vh]  bg-white rounded-2xl">
               <h1 className="text-[50px] font-nunito font-bold flex justify-center items-center mt-[30px] text-blue-500">
                 Update Your Profile
               </h1>

@@ -7,12 +7,14 @@ import TextField from "@mui/material/TextField";
 import { Link, useNavigate } from "react-router-dom";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { FaExclamationCircle } from "react-icons/fa";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import { toast, ToastContainer } from "react-toastify";
 import { DNA } from "react-loader-spinner";
+import { getDatabase, ref, set } from "firebase/database";
 
 const Registration = () => {
   const auth = getAuth();
+  const db = getDatabase();
 
   let [showPassword, setShowPassword] = useState(false);
   let [email, setEmail] = useState("");
@@ -87,8 +89,12 @@ const Registration = () => {
       createUserWithEmailAndPassword(auth, email, password)
         .then((user) => {
           // console.log(user.user);
+         updateProfile(auth.currentUser, {
+         displayName: name, 
+         photoURL: "./src/assets/avatar.png" 
+        //  photoURL must be from firebase storage. Local storage pic is not displayed
+         }).then(() => {
           sendEmailVerification(auth.currentUser)
-          .then(() => {
           setEmail("");
           setName("");
           setPassword("");
@@ -100,9 +106,22 @@ const Registration = () => {
           setTimeout(()=>{
            navigate('/login')
           },2000)
+          // console.log(user);
+         })
+         .then(()=>{
 
-          });  
-        })
+         set(ref(db, 'userInfo/' + user.user.uid), {
+         username: user.user.displayName,
+         email: user.user.email,
+         photo : user.user.photoURL
+        });
+
+        // console.log(user.user.displayName);
+        // console.log(user.user.email);
+
+      })
+      
+    })
         .catch((error) => {
             const errorCode = error.code;
             console.log(errorCode);
@@ -115,7 +134,7 @@ const Registration = () => {
               })
               
             }else if(errorCode === "auth/email-already-in-use"){
-             toast.error("Thsi email is already registered", {
+             toast.error("This email is already registered", {
                className: "bg-[#8e44ad] text-lg text-white font-semibold font-nunito",
                 progressClassName: "bg-white" 
               })
@@ -266,7 +285,7 @@ const Registration = () => {
                     </span>
                   </p>
                 </div>
-              </div>
+              </div> 
               <ToastContainer
                 position="top-center"
                 autoClose={5000}
