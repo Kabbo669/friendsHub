@@ -19,17 +19,24 @@ const FriendRequest = () => {
   onValue(friendRequestRef, (snapshot) => {
     let array = []
   //  console.log(snapshot.val());
-
    snapshot.forEach(item=>{
     if(item.val().receiverId === requestData.uid){
      array.push({...item.val()});
     }
-   
    })
    setFriendRequestData(array) 
   });
  },[])
 console.log(friendRequestData);
+
+
+ let handleAccept=()=>{
+  console.log("Accept button clicked");
+ }
+
+ let handleDelete=()=>{
+  console.log("Delete button clicked");
+ }
 
   return (
   <>
@@ -53,10 +60,10 @@ console.log(friendRequestData);
   
            {
             friendRequestData.map(item=>(
-              <SingleUser profileName= {item.senderName} profileText={item.senderEmail} buttonText="Accept"/>
+            
+                <SingleUser profileName= {item.senderName} profileText={item.senderEmail} buttonOneText="Accept" buttonTwoText= "delete" className= "text-[15px] px-[10px] py-[6px]" buttonOneClick={handleAccept} buttonTwoClick={handleDelete}/>
             ))
            }
-           
     
           </div>
         </div>

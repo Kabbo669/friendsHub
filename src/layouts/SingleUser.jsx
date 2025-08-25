@@ -1,7 +1,7 @@
 import React from "react";
 import UserImage from "../assets/nishat2.jpg";
 
-const SingleUser = ({isLast, profileName, profileText, buttonText, onClick}) => {
+const SingleUser = ({isLast, profileName, profileText, buttonOneText,buttonTwoText, buttonOneClick,buttonTwoClick, className}) => {
   return (
     <>
       <div className="relative flex items-center mb-[14px] pt-[17px]">
@@ -9,7 +9,7 @@ const SingleUser = ({isLast, profileName, profileText, buttonText, onClick}) => 
           <img src={UserImage} alt="" className="w-full h-full rounded-full" />
         </div>
         <div className="flex items-center justify-between w-full pr-[40px]">
-          <div className="pl-[14px]">
+          <div className="pl-[14px]"> 
             <h4 className="text-[18px] font-poppins font-semibold">
               {profileName}
             </h4>
@@ -18,15 +18,25 @@ const SingleUser = ({isLast, profileName, profileText, buttonText, onClick}) => 
             </p>
           </div>
 
-          <div>
-            <button className= "bg-[#5F35F5] text-[#FFFFFF] px-[23px] rounded text-[20px] font-semibold font-poppins" onClick={onClick}>
-              {buttonText}
+          <div className="flex gap-2">
+            {
+              buttonOneText &&
+              <button className= {`bg-[#5F35F5] text-[#FFFFFF] px-[23px] rounded text-[20px] font-semibold font-poppins ${className}`} onClick={buttonOneClick}>
+              {buttonOneText}
             </button>
+            }
+            {
+              buttonTwoText &&
+              <button className= {`bg-[#5F35F5] text-[#FFFFFF] px-[23px] rounded text-[20px] font-semibold font-poppins ${className}`} onClick={buttonTwoClick}>
+              {buttonTwoText}
+            </button>
+            }
           </div>
+
         </div>
         {
           !isLast && 
-          <span className="absolute w-[455px] bg-[#000000] top-[95px] left-[20px] border-b"></span>
+          <span className="absolute w-[455px] border-b bg-[#000000] top-[95px] left-[20px]"></span>
         }
       </div>
 

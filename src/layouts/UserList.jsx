@@ -4,13 +4,17 @@ import { FaSearch } from "react-icons/fa";
 import SingleUser from "./SingleUser";
 import { getDatabase, ref, onValue, set, push } from "firebase/database";
 import { useSelector } from "react-redux";
+import FriendRequest from "./FriendRequest";
 
 
 const UserList = () => {
   const db = getDatabase();
   let [userInfo, setUserInfo] = useState([])
+   let [concatFriendRequest, setConcatFriendRequest] = useState([])
 
   let commonData = useSelector((state)=>state.activeUser.value)
+  
+    // console.log(requestData.uid);
   // console.log(commonData.uid);
   // console.log(commonData.photoURL);
 
@@ -25,16 +29,32 @@ const UserList = () => {
     // console.log(item.key)
     array.push({...item.val(),id:item.key})
     }
-    
   })
   setUserInfo(array)
-  
  });
   },[])
   // console.log(userInfo);
 
+  useEffect(()=>{
+    const friendRequestRef = ref(db, 'friendRequest/');
+    onValue(friendRequestRef, (snapshot) => {
+      
+      let array = []
+      snapshot.forEach(item=>{
+        array.push(item.val().receiverId + item.val().senderId);
+
+      // console.log(item.val().receiverId);
+      // console.log(item.val().senderId);
+     })
+     setConcatFriendRequest(array) 
+    });
+   },[])
+  //  console.log(concatFriendRequest)
+   
+
+
+
  let handleFriendRequest=(item)=>{
-  console.log(item);
    set(push(ref(db, 'friendRequest/')), {
     // user.user.uid is only used in registration or login page
     receiverId:item.id ,
@@ -45,7 +65,8 @@ const UserList = () => {
     senderEmail: commonData.email,
     // Sender data always collect from redux  and receiver data from databse using item
   });
-  }
+}
+
 
 
 
@@ -69,15 +90,22 @@ const UserList = () => {
 
         <div className="h-[280px] overflow-auto">
          
-         {
+        {
           userInfo.map(item=>(
-         <SingleUser profileName= {item.username} profileText={item.email} buttonText="Add"
-         onClick={()=>handleFriendRequest(item)}/>
+          concatFriendRequest.includes(item.id + commonData.uid) ||
+          concatFriendRequest.includes(commonData.uid + item.id)
+          ?
+          concatFriendRequest.includes(item.id + commonData.uid)
+          ?
+          <SingleUser key={item.id} profileName= {item.username} profileText={item.email} buttonOneText="Pending"/>
+          :
+          <SingleUser key={item.id} profileName= {item.username} profileText={item.email} buttonOneText="Cancel"/>
+          :
+          <SingleUser key={item.id} profileName= {item.username} profileText={item.email} buttonOneText="Add"
+          buttonOneClick={()=>handleFriendRequest(item)}/>
 
-         //  if needs to use onClick on component either have to use onClick={onClick} or have to pass {...props} on the component
           ))
-         }
-   
+        }
         </div>
       </div>
     </>
@@ -85,3 +113,5 @@ const UserList = () => {
 };
 
 export default UserList;
+
+//  if needs to use onClick on component either have to use onClick={onClick} or have to pass {...props} on the component
