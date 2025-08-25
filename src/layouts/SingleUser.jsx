@@ -1,7 +1,7 @@
 import React from "react";
 import UserImage from "../assets/nishat2.jpg";
 
-const SingleUser = ({isLast, profileName, profileText, buttonText}) => {
+const SingleUser = ({isLast, profileName, profileText, buttonText, onClick}) => {
   return (
     <>
       <div className="relative flex items-center mb-[14px] pt-[17px]">
@@ -19,7 +19,7 @@ const SingleUser = ({isLast, profileName, profileText, buttonText}) => {
           </div>
 
           <div>
-            <button className="bg-[#5F35F5] text-[#FFFFFF] px-[23px] rounded text-[20px] font-semibold font-poppins">
+            <button className= "bg-[#5F35F5] text-[#FFFFFF] px-[23px] rounded text-[20px] font-semibold font-poppins" onClick={onClick}>
               {buttonText}
             </button>
           </div>
@@ -29,10 +29,12 @@ const SingleUser = ({isLast, profileName, profileText, buttonText}) => {
           <span className="absolute w-[455px] bg-[#000000] top-[95px] left-[20px] border-b"></span>
         }
       </div>
+
+      {/* // To remove the span from last child needs to use condition like {!isLast && <span className="absolute w-[455px] bg-[#000000] top-[95px] left-[20px] border-b"></span>} and have to say isLast = {false} or isLast = {true} */}
     </>
   );
 };
 
 export default SingleUser;
 
-// To remove the span from last child needs to use condition like {!isLast && <span className="absolute w-[455px] bg-[#000000] top-[95px] left-[20px] border-b"></span>} and have to say isLast = {false} or isLast = {true}
+

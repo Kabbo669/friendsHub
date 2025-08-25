@@ -1,9 +1,36 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import SingleUser from "./SingleUser";
+import { getDatabase, ref, onValue } from "firebase/database";
+import { useSelector } from 'react-redux';
 
 const FriendRequest = () => {
+  const db = getDatabase();
+
+  let requestData = useSelector((state)=>state.activeUser.value)
+  console.log(requestData.uid);
+
+  let [friendRequestData, setFriendRequestData] = useState([])
+
+
+  useEffect(()=>{
+  const friendRequestRef = ref(db, 'friendRequest/');
+  onValue(friendRequestRef, (snapshot) => {
+    let array = []
+  //  console.log(snapshot.val());
+
+   snapshot.forEach(item=>{
+    if(item.val().receiverId === requestData.uid){
+     array.push({...item.val()});
+    }
+   
+   })
+   setFriendRequestData(array) 
+  });
+ },[])
+console.log(friendRequestData);
+
   return (
   <>
         <div className="box-border relative">
@@ -24,12 +51,12 @@ const FriendRequest = () => {
   
           <div className="h-[280px] overflow-auto">
   
-           <SingleUser profileName= "Friends Reunion" profileText= "Hi Guys, Wassup!" buttonText="Join"/>
-           <SingleUser profileName= "Friends Forever" profileText="Good to see you" buttonText="Join"/>
-           <SingleUser profileName="Crazy Cousins" profileText="What plans today?" buttonText="Join" />
-           <SingleUser profileName= "Friends Reunion" profileText= "Hi Guys, Wassup!" buttonText="Join"/>
-           <SingleUser profileName= "Friends Forever" profileText="Good to see you" buttonText="Join"/>
-           <SingleUser profileName="Crazy Cousins" profileText="What plans today?" buttonText="Join" isLast={true}/>
+           {
+            friendRequestData.map(item=>(
+              <SingleUser profileName= {item.senderName} profileText={item.senderEmail} buttonText="Accept"/>
+            ))
+           }
+           
     
           </div>
         </div>
