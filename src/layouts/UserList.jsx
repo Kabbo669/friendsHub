@@ -10,7 +10,8 @@ import FriendRequest from "./FriendRequest";
 const UserList = () => {
   const db = getDatabase();
   let [userInfo, setUserInfo] = useState([])
-   let [concatFriendRequest, setConcatFriendRequest] = useState([])
+  let [concatFriendRequest, setConcatFriendRequest] = useState([])
+  let [concatFriends, setConcatFriends] = useState([])
 
   let commonData = useSelector((state)=>state.activeUser.value)
   
@@ -35,6 +36,20 @@ const UserList = () => {
   },[])
   // console.log(userInfo);
 
+   let handleFriendRequest=(item)=>{
+   set(push(ref(db, 'friendRequest/')), {
+    // user.user.uid is only used in registration or login page
+    receiverId:item.id ,
+    receiverName: item.username,
+    receiverEmail: item.email,
+    senderId:commonData.uid ,
+    senderName: commonData.displayName,
+    senderEmail: commonData.email,
+    // Sender data always collect from redux  and receiver data from databse using item
+  });
+}
+
+
   useEffect(()=>{
     const friendRequestRef = ref(db, 'friendRequest/');
     onValue(friendRequestRef, (snapshot) => {
@@ -52,20 +67,20 @@ const UserList = () => {
   //  console.log(concatFriendRequest)
    
 
+  useEffect(()=>{
+     const friendsRef = ref(db, 'friends/');
+     onValue(friendsRef, (snapshot) => {
+      let array2 =[]
+      // console.log(snapshot.val());
+      snapshot.forEach(item=>{
+       array2.push(item.val().receiverId + item.val().senderId);
+      })
+      setConcatFriends(array2)
+    });
+  },[])
 
 
- let handleFriendRequest=(item)=>{
-   set(push(ref(db, 'friendRequest/')), {
-    // user.user.uid is only used in registration or login page
-    receiverId:item.id ,
-    receiverName: item.username,
-    receiverEmail: item.email,
-    senderId:commonData.uid ,
-    senderName: commonData.displayName,
-    senderEmail: commonData.email,
-    // Sender data always collect from redux  and receiver data from databse using item
-  });
-}
+
 
 
 
@@ -89,22 +104,37 @@ const UserList = () => {
         </div>
 
         <div className="h-[280px] overflow-auto">
-         
-        {
-          userInfo.map(item=>(
-          concatFriendRequest.includes(item.id + commonData.uid) ||
-          concatFriendRequest.includes(commonData.uid + item.id)
-          ?
-          concatFriendRequest.includes(item.id + commonData.uid)
-          ?
-          <SingleUser key={item.id} profileName= {item.username} profileText={item.email} buttonOneText="Pending"/>
-          :
-          <SingleUser key={item.id} profileName= {item.username} profileText={item.email} buttonOneText="Cancel"/>
-          :
-          <SingleUser key={item.id} profileName= {item.username} profileText={item.email} buttonOneText="Add"
-          buttonOneClick={()=>handleFriendRequest(item)}/>
 
-          ))
+        {
+          userInfo.map(item=>{
+            let status = "add"
+            const concat1 = item.id + commonData.uid;
+            const concat2 = commonData.uid + item.id
+
+            if(concatFriends.includes(concat1) || concatFriends.includes(concat2)){
+              status = "friends"
+            }else if( concatFriendRequest.includes(concat1)|| concatFriendRequest.includes(concat2)){
+              status = concatFriendRequest.includes(concat2) ? "pending": "cancel"
+            }
+
+            return(
+              <SingleUser key={item.id} profileName={item.username} profileText={item.email} buttonOneText={
+                status === "friends"
+                ? "Friends"
+                : status === "pending"
+                ? "Pending"
+                : status === "cancel"
+                ? "Cancel"
+                : "Add"
+              } buttonOneClick= {status === "add" ? ()=>handleFriendRequest(item): undefined}
+              />
+            )
+
+
+          })
+          
+
+          
         }
         </div>
       </div>

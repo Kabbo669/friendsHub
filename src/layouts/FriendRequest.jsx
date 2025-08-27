@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import SingleUser from "./SingleUser";
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, onValue, push ,set, remove } from "firebase/database";
 import { useSelector } from 'react-redux';
 
 const FriendRequest = () => {
@@ -21,7 +21,7 @@ const FriendRequest = () => {
   //  console.log(snapshot.val());
    snapshot.forEach(item=>{
     if(item.val().receiverId === requestData.uid){
-     array.push({...item.val()});
+     array.push({...item.val(),id:item.key});
     }
    })
    setFriendRequestData(array) 
@@ -30,12 +30,17 @@ const FriendRequest = () => {
 console.log(friendRequestData);
 
 
- let handleAccept=()=>{
-  console.log("Accept button clicked");
+ let handleAccept=(item)=>{
+  console.log(item);
+  set(push(ref(db, 'friends/')), { 
+     ...item
+    }).then(()=>{
+      remove(ref(db, 'friendRequest/' + item.id))
+    })
  }
 
- let handleDelete=()=>{
-  console.log("Delete button clicked");
+ let handleDelete=(item)=>{
+  console.log(item);
  }
 
   return (
@@ -61,9 +66,9 @@ console.log(friendRequestData);
            {
             friendRequestData.map(item=>(
             
-                <SingleUser profileName= {item.senderName} profileText={item.senderEmail} buttonOneText="Accept" buttonTwoText= "delete" className= "text-[15px] px-[10px] py-[6px]" buttonOneClick={handleAccept} buttonTwoClick={handleDelete}/>
+                <SingleUser profileName= {item.senderName} profileText={item.senderEmail} buttonOneText="Accept" buttonTwoText= "delete" className= "text-[12px] px-[10px] py-[6px]" buttonOneClick={()=>handleAccept(item)} buttonTwoClick={()=>handleDelete(item)}/>
             ))
-           }
+           } 
     
           </div>
         </div>

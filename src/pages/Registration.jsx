@@ -91,7 +91,7 @@ const Registration = () => {
           // console.log(user.user);
          updateProfile(auth.currentUser, {
          displayName: name, 
-         photoURL: "./src/assets/avatar.png" 
+         photoURL: "https://firebasestorage.googleapis.com/v0/b/friendshub-2af50.firebasestorage.app/o/avatar.png?alt=media&token=bc88b149-aad3-442b-a34f-975ae6098ec0" 
         //  photoURL must be from firebase storage. Local storage pic is not displayed
          }).then(() => {
           sendEmailVerification(auth.currentUser)

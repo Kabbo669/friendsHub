@@ -142,7 +142,7 @@ const Sidebar = () => {
         <div className="relative w-[120px] h-[120px] flex-shrink-0 rounded-full overflow-hidden min-w-0 min-h-0 group">
           {/* here flex-shrink keep image in the box and without flex-shrink-0 the image will be disappeared while zooming in */}
           <Image
-            src={Profile}
+            src={userData.photoURL}
             alt="Profile Image"
             className="w-full h-full object-cover "
           />

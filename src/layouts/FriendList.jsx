@@ -1,10 +1,29 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import SingleUser from "./SingleUser";
+import { getDatabase, ref, onValue} from "firebase/database";
+import { useSelector } from 'react-redux';
 
 
 const FriendList = () => {
+   const db = getDatabase();
+   let [friendsList, setFriendsList] = useState([])
+   
+   let friends = useSelector((state)=>console.log(state.activeUser.value))
+
+ useEffect(()=>{
+ const friendsRef = ref(db, 'friends/');
+ onValue(friendsRef, (snapshot) => {
+  // console.log(snapshot.val());
+  let array = []
+  snapshot.forEach(item=>{
+   array.push(item.val());
+  })
+ setFriendsList(array)
+});
+  },[])
+
   return (
   <>
         <div className="box-border relative">
@@ -25,12 +44,11 @@ const FriendList = () => {
   
           <div className="h-[280px] overflow-auto">
   
-           <SingleUser profileName= "Friends Reunion" profileText= "Hi Guys, Wassup!" buttonText="Join"/>
-           <SingleUser profileName= "Friends Forever" profileText="Good to see you" buttonText="Join"/>
-           <SingleUser profileName="Crazy Cousins" profileText="What plans today?" buttonText="Join" />
-           <SingleUser profileName= "Friends Reunion" profileText= "Hi Guys, Wassup!" buttonText="Join"/>
-           <SingleUser profileName= "Friends Forever" profileText="Good to see you" buttonText="Join"/>
-           <SingleUser profileName="Crazy Cousins" profileText="What plans today?" buttonText="Join" isLast={true}/>
+           {
+            friendsList.map(item=>(
+              <SingleUser profileName= {item.senderName} profileText= {item.senderEmail} buttonOneText="Block"/>
+            ))
+           }
     
           </div>
         </div>
