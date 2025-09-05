@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import SingleUser from "./SingleUser";
-import { getDatabase, ref, onValue, set, push } from "firebase/database";
+import { getDatabase, ref, onValue, set, push, remove } from "firebase/database";
 import { useSelector } from "react-redux";
 import FriendRequest from "./FriendRequest";
 
@@ -12,12 +12,40 @@ const UserList = () => {
   let [userInfo, setUserInfo] = useState([])
   let [concatFriendRequest, setConcatFriendRequest] = useState([])
   let [concatFriends, setConcatFriends] = useState([])
+  let [concatBlock, setConcatBlock] = useState([])
+  let [searchStore, setSearchStore] = useState([])
+  let [searchInput, setSearchInput] = useState("")
+
+  const buttonLabels ={
+  friends : "Friends",
+  pending : "Pending",
+  cancel : "Cancel",
+  unblock: "Unblock",
+  blocked: "Block",
+  add : "Add"
+  };
+
+  const buttonActions = {
+  add: (item)=>handleFriendRequest(item),
+  unblock : (item)=>handleUnblockFromUserList(item),
+  blocked: (item)=>handleblockFromUserList(item)
+  }
 
   let commonData = useSelector((state)=>state.activeUser.value)
+
+  
   
     // console.log(requestData.uid);
   // console.log(commonData.uid);
   // console.log(commonData.photoURL);
+ 
+   let handleSearch=(event)=>{
+    setSearchInput(event.target.value)
+
+   let search = userInfo.filter(item=>item.username.toLowerCase().includes(event.target.value.toLowerCase()))
+   setSearchStore(search);
+  }
+  
 
   useEffect(()=>{
   const userInfoRef = ref(db, 'userInfo/');
@@ -80,9 +108,25 @@ const UserList = () => {
   },[])
 
 
+  useEffect(()=>{
+    const blockRef = ref(db, 'BlockList/');
+     onValue(blockRef, (snapshot) => {
+      let array =[]
+      snapshot.forEach(item=>{
+       array.push(item.val().blockById + item.val().blockId);
+      }) 
+      setConcatBlock(array)
+    });
+  },[])
+  console.log(concatBlock);
 
+ let handleUnblockFromUserList=()=>{
+  
+ }
 
-
+ let handleblockFromUserList=(item)=>{
+  console.log(item);
+ }
 
 
   return (
@@ -93,6 +137,7 @@ const UserList = () => {
           type="text"
           className="w-full bg-white border-t-0  rounded-full shadow-xl py-4 px-[60px]"
           placeholder="Search"
+          onChange={handleSearch}
         />
         <BsThreeDotsVertical className="absolute top-1/2 -translate-y-1/2 right-[25px] text-[#5F35F5]" />
       </div>
@@ -105,36 +150,56 @@ const UserList = () => {
 
         <div className="h-[280px] overflow-auto">
 
+          
+
         {
+        
+        searchInput.length>0
+        ?
+        searchStore.length > 0
+        ?
+        searchStore.map(item=>{
+          let status = "add"
+          const concat1 = item.id + commonData.uid
+          const concat2 = commonData.uid + item.id
+
+          if(concatFriends.includes(concat1) || concatFriends.includes(concat2)){
+            status = "friends"
+          }else if(concatFriendRequest.includes(concat1) || concatFriendRequest.includes(concat2)){
+            status = concatFriendRequest.includes(concat2) ? "pending" : "cancel"
+          }else if(concatBlock.includes(concat2)){
+            status = "unblock"
+          }else if(concatBlock.includes(concat1)){
+            status = "blocked"
+          }
+          return <SingleUser key={item.key} profileName={item.username} profileText={item.email}
+          src="https://firebasestorage.googleapis.com/v0/b/friendshub-2af50.firebasestorage.app/o/avatar2.webp?alt=media&token=e7ec9f91-5fc8-4d51-8833-ea662cecc94b"
+          buttonOneText={buttonLabels[status]}
+          buttonOneClick={buttonActions[status] ? ()=>buttonActions[status](item): undefined}/>
+         })
+         :
+         <SingleUser extraLabel= "No User Available" className="text-[26px] text-red-600 font-bold font-open" 
+         src="https://firebasestorage.googleapis.com/v0/b/friendshub-2af50.firebasestorage.app/o/avatar.png?alt=media&token=bc88b149-aad3-442b-a34f-975ae6098ec0"/>
+         :
           userInfo.map(item=>{
-            let status = "add"
-            const concat1 = item.id + commonData.uid;
-            const concat2 = commonData.uid + item.id
+          let status = "add"
+          const concat1 = item.id + commonData.uid
+          const concat2 = commonData.uid + item.id
 
-            if(concatFriends.includes(concat1) || concatFriends.includes(concat2)){
-              status = "friends"
-            }else if( concatFriendRequest.includes(concat1)|| concatFriendRequest.includes(concat2)){
-              status = concatFriendRequest.includes(concat2) ? "pending": "cancel"
-            }
-
-            return(
-              <SingleUser key={item.id} profileName={item.username} profileText={item.email} buttonOneText={
-                status === "friends"
-                ? "Friends"
-                : status === "pending"
-                ? "Pending"
-                : status === "cancel"
-                ? "Cancel"
-                : "Add"
-              } buttonOneClick= {status === "add" ? ()=>handleFriendRequest(item): undefined}
-              />
-            )
-
-
-          })
-          
-
-          
+          if(concatFriends.includes(concat1) || concatFriends.includes(concat2)){
+            status = "friends"
+          }else if(concatFriendRequest.includes(concat1) || concatFriendRequest.includes(concat2)){
+            status = concatFriendRequest.includes(concat2) ? "pending" : "cancel"
+          }else if(concatBlock.includes(concat2)){
+            status = "unblock"
+          }else if(concatBlock.includes(concat1)){
+            status = "blocked"
+          }
+          return <SingleUser key={item.key} profileName={item.username} profileText={item.email}
+          src="https://firebasestorage.googleapis.com/v0/b/friendshub-2af50.firebasestorage.app/o/avatar2.webp?alt=media&token=e7ec9f91-5fc8-4d51-8833-ea662cecc94b"
+          buttonOneText={buttonLabels[status]}
+          buttonOneClick={buttonActions[status] ? ()=>buttonActions[status](item): undefined}/>
+         })
         }
         </div>
       </div>

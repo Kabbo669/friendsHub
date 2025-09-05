@@ -40,7 +40,7 @@ console.log(friendRequestData);
  }
 
  let handleDelete=(item)=>{
-  console.log(item);
+  remove(ref(db, 'friendRequest/' + item.id))
  }
 
   return (
@@ -66,7 +66,8 @@ console.log(friendRequestData);
            {
             friendRequestData.map(item=>(
             
-                <SingleUser profileName= {item.senderName} profileText={item.senderEmail} buttonOneText="Accept" buttonTwoText= "delete" className= "text-[12px] px-[10px] py-[6px]" buttonOneClick={()=>handleAccept(item)} buttonTwoClick={()=>handleDelete(item)}/>
+                <SingleUser profileName= {item.senderName} profileText={item.senderEmail} buttonOneText="Accept" buttonTwoText= "delete" className= "text-[12px] px-[8px] py-[4px]" buttonOneClick={()=>handleAccept(item)} buttonTwoClick={()=>handleDelete(item)}
+                src="https://firebasestorage.googleapis.com/v0/b/friendshub-2af50.firebasestorage.app/o/avatar2.webp?alt=media&token=e7ec9f91-5fc8-4d51-8833-ea662cecc94b"/>
             ))
            } 
     

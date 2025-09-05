@@ -1,17 +1,23 @@
 import React from "react";
 import UserImage from "../assets/nishat2.jpg";
 
-const SingleUser = ({isLast, profileName, profileText, buttonOneText,buttonTwoText, buttonOneClick,buttonTwoClick, className}) => {
+const SingleUser = ({isLast, profileName, profileText, buttonOneText,buttonTwoText, buttonOneClick,buttonTwoClick, className, blockedBy, extraLabel, src}) => {
   return (
     <>
       <div className="relative flex items-center mb-[14px] pt-[17px]">
         <div className="h-[70px] w-[70px] ml-[20px] shrink-0">
-          <img src={UserImage} alt="" className="w-full h-full rounded-full" />
+          <img src={src} alt="" className="w-full h-full rounded-full" />
         </div>
         <div className="flex items-center justify-between w-full pr-[40px]">
           <div className="pl-[14px]"> 
             <h4 className="text-[18px] font-poppins font-semibold">
               {profileName}
+            </h4>
+            {
+              extraLabel && <span className={`text-[16px] font-poppins font-semibold ${className}` }>{extraLabel}</span>
+            }
+            <h4 className="text-[18px] font-poppins font-semibold">
+              {blockedBy}
             </h4>
             <p className="text-[14px] font-poppins font-normal text-[#4D4D4D]">
               {profileText}

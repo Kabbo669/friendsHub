@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import SingleUser from "./SingleUser";
-import { getDatabase, ref, onValue} from "firebase/database";
+import { getDatabase, ref, onValue, push, set, remove} from "firebase/database";
 import { useSelector } from 'react-redux';
 
 
@@ -10,7 +10,9 @@ const FriendList = () => {
    const db = getDatabase();
    let [friendsList, setFriendsList] = useState([])
    
-   let friends = useSelector((state)=>console.log(state.activeUser.value))
+   let friends = useSelector((state)=>state.activeUser.value)
+   console.log(friends);
+   
 
  useEffect(()=>{
  const friendsRef = ref(db, 'friends/');
@@ -18,11 +20,37 @@ const FriendList = () => {
   // console.log(snapshot.val());
   let array = []
   snapshot.forEach(item=>{
-   array.push(item.val());
+    // console.log(item.val());
+    if(friends.uid === item.val().senderId || friends.uid === item.val().receiverId){
+    array.push({...item.val(), id:item.key})
+    }
   })
  setFriendsList(array)
 });
   },[])
+
+  let handleBlock=(item)=>{
+    
+     if(friends.uid === item.senderId){
+     set(push(ref(db, 'BlockList/')), { 
+     block:item.receiverName,
+     blockId:item.receiverId,
+     blockBy: item.senderName,
+     blockById:item.senderId,
+    }).then(()=>{
+      remove(ref(db, 'friends/' + item.id))
+    })
+     }else{
+    set(push(ref(db, 'BlockList/')), { 
+     block:item.senderName,
+     blockId:item.senderId,
+     blockBy: item.receiverName,
+     blockById:item.receiverId,
+    }).then(()=>{
+      remove(ref(db, 'friends/' + item.id))
+    })
+    }
+  }
 
   return (
   <>
@@ -46,7 +74,9 @@ const FriendList = () => {
   
            {
             friendsList.map(item=>(
-              <SingleUser profileName= {item.senderName} profileText= {item.senderEmail} buttonOneText="Block"/>
+              <SingleUser profileName= {friends.uid === item.receiverId ? item.senderName: item.receiverName} profileText= {item.senderEmail}
+              src="https://firebasestorage.googleapis.com/v0/b/friendshub-2af50.firebasestorage.app/o/avatar2.webp?alt=media&token=e7ec9f91-5fc8-4d51-8833-ea662cecc94b" 
+              buttonOneText="Block" buttonOneClick={()=>handleBlock(item)}/>
             ))
            }
     
