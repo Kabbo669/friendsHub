@@ -29,7 +29,7 @@ const SingleUser = ({isLast, profileName, profileText, buttonOneText,buttonTwoTe
               buttonOneText &&
               <button className= {`bg-[#5F35F5] text-[#FFFFFF] px-[23px] rounded text-[20px] font-semibold font-poppins ${className}`} onClick={buttonOneClick}>
               {buttonOneText}
-            </button>
+            </button> 
             }
             {
               buttonTwoText &&

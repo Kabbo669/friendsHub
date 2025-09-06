@@ -6,6 +6,7 @@ import Button from '../components/Button';
 import { TextField } from '@mui/material';
 import { getDatabase, onValue, push, ref, set } from "firebase/database";
 import { useSelector } from 'react-redux';
+import Search from '../components/Search';
 
 const MyGroups = () => {
   const db = getDatabase();
@@ -124,16 +125,7 @@ const MyGroups = () => {
 
   return (
    <>
-        <div className="box-border relative">
-          <FaSearch className="absolute top-1/2 -translate-y-1/2 left-[25px] text-[#5F35F5]" />
-          <input
-            type="text"
-            className="w-full bg-white border-t-0  rounded-full shadow-xl py-4 px-[60px]"
-            placeholder="Search"
-            onChange={handleGroupSearch}
-          />
-          <BsThreeDotsVertical className="absolute top-1/2 -translate-y-1/2 right-[25px] text-[rgb(95,53,245)]" />
-        </div> 
+        <Search isActive={true} onChange={handleGroupSearch}/> 
   
         <div className="mt-7 border border-t-0 rounded-lg shadow-lg h-[332px]">
           <div className="flex items-center justify-between  px-[25px] py-3">
@@ -141,7 +133,7 @@ const MyGroups = () => {
             <Button text="Create Group" className="rounded-lg px-1 py-1" onClick = {handleCreateGroup}/>
           </div>
   
-          <div className="h-[280px] overflow-scroll">
+          <div className="h-[262px] overflow-auto">
   
            {
             groupSearchInput.length > 0

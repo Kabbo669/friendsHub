@@ -4,6 +4,7 @@ import { FaSearch } from "react-icons/fa";
 import SingleUser from "./SingleUser";
 import { useSelector } from 'react-redux';
 import { getDatabase, onValue, push, ref, remove, set } from 'firebase/database';
+import Search from '../components/Search';
 
 const BlockList = () => {
   const db = getDatabase();
@@ -60,15 +61,7 @@ const BlockList = () => {
   
   return (
  <>
-        <div className="box-border relative">
-          <FaSearch className="absolute top-1/2 -translate-y-1/2 left-[25px] text-[#5F35F5]" />
-          <input
-            type="text"
-            className="w-full bg-white border-t-0  rounded-full shadow-xl py-4 px-[60px]"
-            placeholder="Search"
-          />
-          <BsThreeDotsVertical className="absolute top-1/2 -translate-y-1/2 right-[25px] text-[#5F35F5]" />
-        </div>
+       <Search isActive={true}/>
   
         <div className="mt-7 border border-t-0 rounded-lg shadow-lg h-[332px]">
           <div className="flex items-center justify-between  px-[25px] py-3">
@@ -76,10 +69,10 @@ const BlockList = () => {
             <BsThreeDotsVertical className="text-[#5F35F5]" />
           </div>
   
-          <div className="h-[280px] overflow-auto">
+          <div className="h-[272px] overflow-auto">
            {
             blockFriend.map(item=>(
-              <SingleUser extraLabel={item.blockBy && "Blocked By"} profileName={item.block}  blockedBy = {item.blockBy} 
+              <SingleUser  profileName={item.block}  blockedBy = {item.blockBy} extraLabel={item.blockBy && "Blocked By"}
               src="https://firebasestorage.googleapis.com/v0/b/friendshub-2af50.firebasestorage.app/o/avatar2.webp?alt=media&token=e7ec9f91-5fc8-4d51-8833-ea662cecc94b"
               buttonOneText = {item.block && "Unblock"} buttonOneClick={()=>handleUnblock(item)}/>
             ))

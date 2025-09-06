@@ -148,7 +148,7 @@ const UserList = () => {
           <BsThreeDotsVertical className="text-[#5F35F5]" />
         </div>
 
-        <div className="h-[280px] overflow-auto">
+        <div className="h-[272px] overflow-auto">
 
           
 

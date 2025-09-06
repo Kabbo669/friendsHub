@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { FaSearch } from "react-icons/fa";
 import SingleUser from "./SingleUser";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { useSelector } from 'react-redux';
-import { CgKey } from 'react-icons/cg';
+import Search from '../components/Search';
 
-const GroupList = () => {
+const GroupList = ({headerText = "Group List", className }) => {
   const db = getDatabase();
 
   let [groupList, setGroupList] = useState([])
@@ -34,23 +33,15 @@ const GroupList = () => {
   
   return (
   <>
-        <div className="box-border relative">
-          <FaSearch className="absolute top-1/2 -translate-y-1/2 left-[25px] text-[#5F35F5]" />
-          <input
-            type="text"
-            className="w-full bg-white border-t-0  rounded-full shadow-xl py-4 px-[60px]"
-            placeholder="Search"
-          />
-          <BsThreeDotsVertical className="absolute top-1/2 -translate-y-1/2 right-[25px] text-[#5F35F5]" />
-        </div> 
+       <Search isActive={true}/>
   
-        <div className="mt-7 border border-t-0 rounded-lg shadow-lg h-[332px]">
+        <div className= "mt-7 border border-t-0 rounded-lg shadow-lg h-[332px]">
           <div className="flex items-center justify-between  px-[25px] py-3">
-            <h4 className="text-xl font-semibold font-poppins">Groups List</h4>
+            <h4 className="text-xl font-semibold font-poppins">{headerText}</h4>
             <BsThreeDotsVertical className="text-[#5F35F5]" />
           </div>
   
-          <div className="h-[280px] overflow-auto">
+          <div className= {`overflow-auto h-[272px] ${className}`}>
   
            {
             groupList.map(item=>(

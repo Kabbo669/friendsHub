@@ -4,9 +4,10 @@ import { FaSearch } from "react-icons/fa";
 import SingleUser from "./SingleUser";
 import { getDatabase, ref, onValue, push, set, remove} from "firebase/database";
 import { useSelector } from 'react-redux';
+import Search from '../components/Search';
 
 
-const FriendList = () => {
+const FriendList = ({showSearch = true, className}) => {
    const db = getDatabase();
    let [friendsList, setFriendsList] = useState([])
    
@@ -54,15 +55,9 @@ const FriendList = () => {
 
   return (
   <>
-        <div className="box-border relative">
-          <FaSearch className="absolute top-1/2 -translate-y-1/2 left-[25px] text-[#5F35F5]" />
-          <input
-            type="text"
-            className="w-full bg-white border-t-0  rounded-full shadow-xl py-4 px-[60px]"
-            placeholder="Search"
-          />
-          <BsThreeDotsVertical className="absolute top-1/2 -translate-y-1/2 right-[25px] text-[#5F35F5]" />
-        </div>
+        {
+         showSearch && <Search isActive={true}/>
+        }
   
         <div className="mt-7 border border-t-0 rounded-lg shadow-lg h-[332px]">
           <div className="flex items-center justify-between  px-[25px] py-3">
@@ -70,7 +65,7 @@ const FriendList = () => {
             <BsThreeDotsVertical className="text-[#5F35F5]" />
           </div>
   
-          <div className="h-[280px] overflow-auto">
+          <div className= {`overflow-auto h-[262px] ${className}`}>
   
            {
             friendsList.map(item=>(
