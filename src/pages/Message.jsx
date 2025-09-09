@@ -1,16 +1,88 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Flex from "../components/Flex";
 import GroupList from "../layouts/GroupList";
 import FriendList from "../layouts/FriendList";
 import Image from "../assets/avatar2.webp";
-import Image2 from "../assets/nishat2.jpg"
+import Image2 from "../assets/nishat2.jpg";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { RiEmojiStickerLine } from "react-icons/ri";
 import { FaCameraRetro, FaTelegramPlane } from "react-icons/fa";
-import ModalImage from "react-modal-image";
-
+import SenderMessage from "../components/SenderMessage";
+import ReceiverMessage from "../components/ReceiverMessage";
+import SenderImage from "../components/SenderImage";
+import ReceiverImage from "../components/ReceiverImage";
+import { useDispatch, useSelector } from "react-redux";
+import {chat} from '../slices/MessageSlice';
+import { getDatabase, onValue, push, ref, set } from "firebase/database";
 
 const Message = () => {
+    const db = getDatabase();
+    const bottomRef = useRef(null)
+
+  const [selectedFriend, setSelectedFriend] = useState("")
+  const [input, setInput] = useState("")
+  let  [allMessage, setAllMessage] = useState([])
+
+  let user = useSelector((state)=>state.activeUser.value)
+  // console.log(user.uid);
+  // console.log(user.displayName);
+
+  let chatData = useSelector((state)=>state.userMessage.value)
+  console.log(chatData);
+
+  let dispatch = useDispatch()
+
+  let handleMessage=(friend)=>{
+    // console.log(friend);
+    setSelectedFriend(friend);
+    dispatch(chat({
+      ...friend, status: "single"
+    }))
+    localStorage.setItem("singleMessage", JSON.stringify({
+      ...friend, status: "single"
+    }))
+  }
+
+  let handleSendMessage=()=>{ 
+    if(chatData?.status === "single"){
+      // If there is no selected friend ? will prevent crashing
+     set(push(ref(db, 'singleMessage/')), {
+      senderId: user.uid,
+      senderName : user.displayName,
+      receiverId: chatData.id,
+      receiverName: chatData.name, 
+      message : input,
+      date: new Date().toISOString()
+
+      // chatData.id and chatData.name comes from friend where it has been sent as id: friendId, name: friendName
+  }).then(()=>{
+    setInput("")
+  }) 
+    }else{
+      console.log("Data not sent");
+    }
+  }
+
+  useEffect(()=>{
+  const singleMessageRef = ref(db, 'singleMessage/');
+  onValue(singleMessageRef, (snapshot) => {
+    let messages = []
+    snapshot.forEach((item)=>{
+    if((item.val().senderId == user.uid && item.val().receiverId == chatData.id) ||
+    (item.val().senderId == chatData.id && item.val().receiverId == user.uid)){
+    messages.push({...item.val(), id:item.key})
+    }
+    })
+    setAllMessage(messages)
+  });
+},[])
+
+ useEffect(()=>{
+  if(bottomRef.current){
+    bottomRef.current.scrollIntoView({behavior : "smooth"})
+  }
+ },[allMessage])
+  
   return (
     <>
       <div className="w-full h-screen flex  overflow-hidden">
@@ -20,7 +92,7 @@ const Message = () => {
           </div>
 
           <div className="mt-[-15px] w-[520px]">
-            <FriendList />
+            <FriendList buttonOneText= "Message" onChatClick={handleMessage}/>
           </div>
         </Flex>
 
@@ -37,7 +109,7 @@ const Message = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold font-nunito text-black">
-                  Robiul
+                  {chatData ? chatData.name : "Select a friend"}
                 </h3>
                 <p className="text-sm font-nunito">Online</p>
               </div>
@@ -50,74 +122,30 @@ const Message = () => {
           <span className="absolute w-[88%] border-b border-b-[#8a8888] bottom-[60px]"></span>
 
           <div className="h-[90%] overflow-y-auto my-3 px-5">
-
             {/* Sender text design start */}
-            <div className="mt-7 relative inline-block">
-              <div className=" bg-[#e3e2e2] rounded-r-md rounded-tl-md inline-block max-w-[500px]">
-                <p className="px-10 py-4 text-base font-medium font-nunito break-words">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Officia, unde expedita accusamus facere est assumenda vero
-                  commodi aut autem cupiditate, cum velit, obcaecati odio ad
-                  suscipit eius numquam inventore? Nobis obcaecati eos ex ?
-                </p>
-              </div>
-              
-              {/* Tooltip design */}
-              <div className="absolute border-t-[14px] border-r-[15px] border-t-transparent border-r-[#e3e2e2] left-0 bottom-[22px] -translate-x-2/3"></div>
-              <p className="text-[12px] text-[#969595] font-poppins pt-1">
-                Today, 2:01 pm
-              </p>
-            </div>
-            <div className="w-[70%] h-auto my-[30px]">
-              <ModalImage
-               small={Image2}
-               large={Image2}
-               alt="Hello World!"
-               className="w-full h-full"
-              />
-              <div className="flex justify-start">
-                 <p className="text-[12px] text-[#969595] font-poppins pt-1">
-                Today, 2:01 pm
-              </p>
-              </div>
-              </div>
-             
+           {
+            allMessage.map((item)=>(
+             item.senderId === user.uid
+             ? 
+             <SenderMessage key={item.id} text={item.message} timesTap={item.date}/>
+             :
+             <ReceiverMessage key={item.id} text={item.message} timesTap={item.date}/>
+            ))
+           }
+          
+
+           
+
             {/* Sender text design End */}
 
             {/* Receiver text design start */}
 
-
-            <div className="flex flex-col items-end justify-end mt-7">
-              <div className="flex relative ">
-                <div className="bg-[#5F35F5] rounded-l-md rounded-tr-md max-w-[500px] inline-block">
-                  <p className="text-base text-white font-medium font-nunito px-10 py-4 break-words">
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                    Quo dolores ipsa, nesciunt id omnis quam officia numquam ad
-                    ut nobis nulla sint eaque molestias tenetur.
-                  </p>
-                  
-                </div>
-                {/* Tooltip design */}
-                <div className="absolute border-b-[14px] border-r-[15px] border-r-transparent border-b-[#5F35F5] right-[-12px] bottom-0"></div>
-              </div>
-              <p className="text-[12px] text-[#969595] font-poppins   pt-1">
-                Today, 2:10 pm{" "}
-              </p>
-            </div>
-             <div className="my-[30px] flex justify-end items-end">
-              <div className="w-[70%] h-auto">
-              <ModalImage
-               small={Image2}
-               large={Image2}
-               alt="Hello World!"
-               className="w-full h-full"
-              />
-               <p className="flex justify-end items-end text-[12px] text-[#969595] font-poppins pt-1">
-                Today, 2:01 pm
-              </p>
-              </div>
-             </div>
+            {/* <ReceiverImage
+              image={Image2}
+              timesTap="Today, 4:20 pm"
+            /> */}
             {/* Receiver text design End */}
+            <div ref={bottomRef}></div>
           </div>
 
           {/* Input and sending message and other design start */}
@@ -125,8 +153,10 @@ const Message = () => {
             <div className="relative">
               <input
                 type="text"
+                value={input}
                 placeholder="Enter your text"
                 className="text-lg w-[91%] py-2 pl-5 pr-[90px] bg-slate-100"
+                onChange={(event)=>setInput(event.target.value)}
               />
               <div className="absolute flex top-0 left-[84%] translate-y-1/2 gap-3 items-center">
                 <RiEmojiStickerLine className="text-[21px] text-[#636262]" />
@@ -134,11 +164,11 @@ const Message = () => {
               </div>
             </div>
             <div className="absolute right-[7%] bottom-[14px] bg-[#5F35F5] px-[12px] py-[10px] rounded-md">
-              <FaTelegramPlane className="text-[20px] text-white" />
+              <FaTelegramPlane onClick={handleSendMessage} className="text-[20px] text-white" />
             </div>
           </div>
           {/* Input and sending message and other design end */}
-        </div> 
+        </div>
       </div>
     </>
   );

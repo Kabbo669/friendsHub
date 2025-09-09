@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const SidebarLink = ({name, activeValue, icon }) => {
   let Icon = icon;
-  let isActive = activeValue === name;
+  let isActive = activeValue === name; 
 
   // This is the shorhand formula for active value.
 

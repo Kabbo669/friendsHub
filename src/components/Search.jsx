@@ -4,7 +4,7 @@ import { FaSearch } from 'react-icons/fa'
 
 const Search = ({isActive, onChange}) => {
   return (
-     <div className="box-border relative">
+     <div className="box-border relative"> 
               {
                 isActive &&
                 <span>

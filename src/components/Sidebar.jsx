@@ -57,7 +57,7 @@ const Sidebar = () => {
   useEffect(() => {
     setActiveValue(location.pathname.replace("/pages/", ""));
   }, [location.pathname]);
-  console.log(activeValue);
+  // console.log(activeValue);
 
   let handleUpdateProfile = () => {
     setProfileUi(true);
@@ -220,7 +220,7 @@ const Sidebar = () => {
             icon={IoHomeOutline}
             activeValue={activeValue}
           />
-          <SidebarLink
+          <SidebarLink 
             name="message"
             icon={LuMessageCircleMore}
             activeValue={activeValue}

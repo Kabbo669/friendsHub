@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import Search from '../components/Search';
 
 
-const FriendList = ({showSearch = true, className}) => {
+const FriendList = ({showSearch = true, className, buttonOneText, onChatClick}) => {
    const db = getDatabase();
    let [friendsList, setFriendsList] = useState([])
    
@@ -68,11 +68,23 @@ const FriendList = ({showSearch = true, className}) => {
           <div className= {`overflow-auto h-[262px] ${className}`}>
   
            {
-            friendsList.map(item=>(
-              <SingleUser profileName= {friends.uid === item.receiverId ? item.senderName: item.receiverName} profileText= {item.senderEmail}
+            friendsList.map(item=>{
+            const friendId = friends.uid === item.receiverId ?item.senderId : item.receiverId
+            const friendName = friends.uid === item.receiverId ? item.senderName : item.receiverName
+
+
+             return <SingleUser profileName= {friends.uid === item.receiverId ? item.senderName: item.receiverName} profileText= {item.senderEmail}
               src="https://firebasestorage.googleapis.com/v0/b/friendshub-2af50.firebasestorage.app/o/avatar2.webp?alt=media&token=e7ec9f91-5fc8-4d51-8833-ea662cecc94b" 
-              buttonOneText="Block" buttonOneClick={()=>handleBlock(item)}/>
-            ))
+              buttonOneText={buttonOneText || "Block"} buttonOneClick={()=>{
+                if(onChatClick){
+                  onChatClick({id: friendId, name: friendName})
+                }else{
+                  handleBlock(item)
+                }
+              }
+            }
+            />
+           })
            }
     
           </div>
