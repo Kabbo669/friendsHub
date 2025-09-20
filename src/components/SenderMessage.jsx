@@ -1,3 +1,4 @@
+import moment from 'moment'
 import React from 'react'
 
 const SenderMessage = ({text,timesTap}) => {
@@ -17,7 +18,12 @@ const SenderMessage = ({text,timesTap}) => {
               {/* Tooltip design */}
             
               {
-                timesTap && <p className="text-[12px] text-[#969595] font-poppins pt-1">{new Date(timesTap).toLocaleTimeString([], {hour : "2-digit", minute: "2-digit"})}</p>
+                timesTap && <p className="text-[12px] text-[#969595] font-poppins pt-1">{moment(timesTap).calendar(null, {
+                  sameDay: "[Today] h:mm A",
+                  lastDay: "[Yesterday] h:mm A",
+                  lastWeek: "dddd h:mm A",
+                  sameElse: "DD/MM/YYYY h:mm A"
+                })}</p>
               }
      </div>
   )

@@ -12,7 +12,7 @@ const FriendList = ({showSearch = true, className, buttonOneText, onChatClick}) 
    let [friendsList, setFriendsList] = useState([])
    
    let friends = useSelector((state)=>state.activeUser.value)
-   console.log(friends);
+  //  console.log(friends);
    
 
  useEffect(()=>{
@@ -82,6 +82,7 @@ const FriendList = ({showSearch = true, className, buttonOneText, onChatClick}) 
                   handleBlock(item)
                 }
               }
+              
             }
             />
            })

@@ -22,6 +22,16 @@ export default {
         "lightBlack": "#808080",
         "darkBlue" : "#03014C"
       },
+      keyframes :{
+        spinPause: {
+        "0%" : {transform : "rotate(0deg)"},
+        "80%": {transform: "rotate(360deg)"},
+        "100%" : {transform: "rotate(360deg)"}
+        },
+      },
+      animation :{
+       "spinPause": "spinPause 2s linear infinite",
+      },
     },
   },
   plugins: [],
