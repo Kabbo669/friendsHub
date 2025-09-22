@@ -20,6 +20,7 @@ import { getDownloadURL, getStorage, ref as Sref, uploadBytes } from "firebase/s
 import EmojiPicker from 'emoji-picker-react';
 
 
+
 const Message = () => {
   const db = getDatabase();
   const storage = getStorage();
@@ -137,6 +138,13 @@ const Message = () => {
     setEmoji(!emoji)
   }
 
+  let handleEmojiPicker=(emoji)=>{
+    // console.log(emoji.emoji);
+    setInput(input + emoji.emoji)
+    // setEmoji(false)
+  }
+
+
   return (
     <>
       <div className="w-full h-screen flex  overflow-hidden">
@@ -223,12 +231,11 @@ const Message = () => {
                 />
                 <div className="absolute flex top-0 left-[84%] translate-y-1/2 gap-3 items-center">
 
-                   
                     <RiEmojiStickerLine className="relative text-[21px] text-[#636262]" onClick={handleEmoji}/>
                    {
                     emoji &&
                      <div className="absolute bottom-[36px] right-[-135px]">
-                     <EmojiPicker />
+                     <EmojiPicker onEmojiClick={(emoji)=>handleEmojiPicker(emoji)}/>
                     </div>
                    }
                    
